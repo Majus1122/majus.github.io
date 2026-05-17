@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Majus — Game Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080b12;
+    --bg2: #0e1220;
+    --surface: #131927;
+    --border: rgba(255,255,255,0.07);
+    --accent: #5b8cff;
+    --accent2: #a78bfa;
+    --text: #e8ecf4;
+    --muted: #7a8499;
+    --glow: rgba(91,140,255,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 72% 8%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 88% 45%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 93% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 33% 12%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 88%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 18% 42%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 5%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 82% 25%, rgba(255,255,255,0.4) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Nebula glow */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,140,255,0.06) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 100px 0 60px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, #5b8cff 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+    font-weight: 300;
+  }
+
+  /* ─── STATUS PILL ─── */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 32px;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3ddc84;
+    box-shadow: 0 0 6px #3ddc8480;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ─── ABOUT ─── */
+  .about {
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .about p {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  .about p + p { margin-top: 12px; }
+
+  /* ─── TAGS ─── */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* ─── LINKS ─── */
+  .links-section {
+    padding: 48px 0 80px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .links-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 500px) {
+    .links-grid { grid-template-columns: 1fr; }
+  }
+
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--glow);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .link-card:hover {
+    border-color: rgba(91,140,255,0.3);
+    transform: translateY(-2px);
+  }
+
+  .link-card:hover::before { opacity: 1; }
+
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+
+  .link-info { flex: 1; min-width: 0; }
+
+  .link-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 300;
+  }
+
+  .link-arrow {
+    color: var(--muted);
+    font-size: 16px;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .link-card:hover .link-arrow {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+
+  /* Placeholder card */
+  .link-card.placeholder {
+    border-style: dashed;
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .link-card.placeholder:hover {
+    transform: none;
+    border-color: var(--border);
+  }
+
+  .link-card.placeholder::before { display: none; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── ANIMATION ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Game developer &amp; creator</p>
+    <h1>Hey, I'm<br><span>Majus.</span></h1>
+    <p class="hero-sub">
+      I build games and learn stuff. Currently working in Roblox, learning C# and Godot, and dreaming up a space station sandbox game.
+    </p>
+    <div class="status">
+      <span class="status-dot"></span>
+      Currently: learning Godot &amp; C# &amp; C++
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <p class="section-label">About</p>
+    <p>
+      I got my start in Roblox development, picking up Lua and figuring out how games actually work from the inside. Now I'm expanding — learning C#, C++, exploring game engines like Godot and Unreal Engine 5.
+    </p>
+    <p>
+      I'm also getting into Blender for 3D modelling. The goal is to build real, polished games one day. For now, I'm building, breaking things, and figuring it out.
+    </p>
+    <div class="tags">
+      <span class="tag">Roblox / Lua</span>
+      <span class="tag">C#</span>
+      <span class="tag">C++</span>
+      <span class="tag">Godot</span>
+      <span class="tag">Blender</span>
+      <span class="tag">Game design</span>
+      <span class="tag">UE5</span>
+    </div>
+  </section>
+
+  <!-- LINKS -->
+  <section class="links-section">
+    <p class="section-label">Find me</p>
+    <div class="links-grid">
+
+      <!-- Roblox -->
+      <a class="link-card" href="https://www.roblox.com/users/3676178504/profile" target="_blank" rel="noopener">
+        <div class="link-icon">🎮</div>
+        <div class="link-info">
+          <p class="link-name">Roblox Games</p>
+          <p class="link-desc">Play my games</p>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- GitHub -->
+      <a class="link-card" href="https://github.com/Majus1122" target="_blank" rel="noopener">
+        <div class="link-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#e8ecf4">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+        </div>
+        <div class="link-info">
+          <p class="link-name">GitHub</p>
+          <p class="link-desc">Code &amp; projects</p>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Future Godot Games -->
+      <a class="link-card placeholder" href="#" aria-disabled="true">
+        <div class="link-icon">🚀</div>
+        <div class="link-info">
+          <p class="link-name">Godot Games</p>
+          <p class="link-desc">Coming soon...</p>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Social — replace with your platform -->
+      <a class="link-card" href="https://www.youtube.com/@POV_Lab24" target="_blank" rel="noopener">
+        <div class="link-icon">💬</div>
+        <div class="link-info">
+          <p class="link-name">Social</p>
+          <p class="link-desc">Come say hi</p>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Extra website slot -->
+      <a class="link-card" href="https://YOUR_WEBSITE" target="_blank" rel="noopener" style="grid-column: 1 / -1;">
+        <div class="link-icon">🌐</div>
+        <div class="link-info">
+          <p class="link-name">Website / Blog</p>
+          <p class="link-desc">Whatever else you want to link here</p>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    Built by Majus &nbsp;·&nbsp; <span style="font-family:'DM Mono',monospace">2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
